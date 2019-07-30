@@ -54,7 +54,7 @@ class Products with ChangeNotifier {
     return _items.firstWhere((prodItem) => prodItem.id == id);
   }
 
-  void addProduct(Product product) async {
+  Future<void> addProduct(Product product) async {
     var url = '${Constants.API_URL}/products.json';
 
     var response = await http.post(
