@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 
 import './product.dart';
+import '../constants.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -50,9 +54,23 @@ class Products with ChangeNotifier {
     return _items.firstWhere((prodItem) => prodItem.id == id);
   }
 
-  void addProduct(Product product) {
+  void addProduct(Product product) async {
+    var url = '${Constants.API_URL}/products.json';
+
+    var response = await http.post(
+      url,
+      body: json.encode({
+        'title': product.title,
+        'description': product.description,
+        'imageUrl': product.imageUrl,
+        'price': product.price,
+        'isFavorite': product.isFavorite,
+      }),
+    );
+    var resData = json.decode(response.body);
+
     final newProduct = Product(
-      id: DateTime.now().toString(),
+      id: resData['name'],
       title: product.title,
       price: product.price,
       description: product.description,
