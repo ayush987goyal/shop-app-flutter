@@ -96,7 +96,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
     try {
       if (_editedProduct.id != null) {
-        Provider.of<Products>(context, listen: false)
+        await Provider.of<Products>(context, listen: false)
             .updateProduct(_editedProduct.id, _editedProduct);
       } else {
         await Provider.of<Products>(context, listen: false)
