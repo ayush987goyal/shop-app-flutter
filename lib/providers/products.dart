@@ -9,6 +9,9 @@ import '../models/http_exception.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [];
+  final String authToken;
+
+  Products(this.authToken, this._items);
 
   List<Product> get items {
     return [..._items];
@@ -23,7 +26,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    var url = '${Constants.API_URL}/products.json';
+    final url = '${Constants.API_URL}/products.json?auth=$authToken';
 
     try {
       final respose = await http.get(url);
@@ -51,7 +54,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    var url = '${Constants.API_URL}/products.json';
+    final url = '${Constants.API_URL}/products.json?auth=$authToken';
 
     try {
       final response = await http.post(
@@ -86,7 +89,7 @@ class Products with ChangeNotifier {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
 
     if (prodIndex >= 0) {
-      final url = '${Constants.API_URL}/products/$id.json';
+      final url = '${Constants.API_URL}/products/$id.json?auth=$authToken';
 
       await http.patch(
         url,
@@ -110,7 +113,7 @@ class Products with ChangeNotifier {
     _items.removeAt(existingProductIndex);
     notifyListeners();
 
-    final url = '${Constants.API_URL}/products/$id.json';
+    final url = '${Constants.API_URL}/products/$id.json?auth=$authToken';
     final response = await http.delete(url);
 
     if (response.statusCode >= 400) {
