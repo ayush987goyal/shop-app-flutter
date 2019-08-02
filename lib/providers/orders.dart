@@ -22,13 +22,16 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   List<OrderItem> _items = [];
+  final String authToken;
+
+  Orders(this.authToken, this._items);
 
   List<OrderItem> get orders {
     return [..._items];
   }
 
   Future<void> fetchAndSetOrders() async {
-    var url = '${Constants.API_URL}/orders.json';
+    final url = '${Constants.API_URL}/orders.json?auth=$authToken';
 
     try {
       final response = await http.get(url);
@@ -62,7 +65,7 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
-    var url = '${Constants.API_URL}/orders.json';
+    final url = '${Constants.API_URL}/orders.json?auth=$authToken';
     final timeStamp = DateTime.now();
 
     try {
