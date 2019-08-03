@@ -26,8 +26,10 @@ class Products with ChangeNotifier {
     return _items.firstWhere((prodItem) => prodItem.id == id);
   }
 
-  Future<void> fetchAndSetProducts() async {
-    var url = '${Constants.API_URL}/products.json?auth=$authToken';
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    final filterStr =
+        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
+    var url = '${Constants.API_URL}/products.json?auth=$authToken&$filterStr';
 
     try {
       final respose = await http.get(url);
@@ -68,7 +70,8 @@ class Products with ChangeNotifier {
           'title': product.title,
           'description': product.description,
           'imageUrl': product.imageUrl,
-          'price': product.price
+          'price': product.price,
+          'creatorId': userId,
         }),
       );
       final resData = json.decode(response.body);
