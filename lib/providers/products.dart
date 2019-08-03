@@ -10,8 +10,9 @@ import '../models/http_exception.dart';
 class Products with ChangeNotifier {
   List<Product> _items = [];
   final String authToken;
+  final String userId;
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this.userId, this._items);
 
   List<Product> get items {
     return [..._items];
@@ -26,13 +27,17 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    final url = '${Constants.API_URL}/products.json?auth=$authToken';
+    var url = '${Constants.API_URL}/products.json?auth=$authToken';
 
     try {
       final respose = await http.get(url);
       final extractedData = json.decode(respose.body) as Map<String, dynamic>;
 
       if (extractedData == null) return;
+
+      url = '${Constants.API_URL}/userFavorites/$userId.json?auth=$authToken';
+      final favResponse = await http.get(url);
+      final favData = json.decode(favResponse.body);
 
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
@@ -41,8 +46,8 @@ class Products with ChangeNotifier {
           title: prodData['title'],
           description: prodData['description'],
           price: prodData['price'],
-          isFavorite: prodData['isFavorite'],
           imageUrl: prodData['imageUrl'],
+          isFavorite: favData == null ? false : favData[prodId] ?? false,
         ));
       });
 
@@ -63,8 +68,7 @@ class Products with ChangeNotifier {
           'title': product.title,
           'description': product.description,
           'imageUrl': product.imageUrl,
-          'price': product.price,
-          'isFavorite': product.isFavorite,
+          'price': product.price
         }),
       );
       final resData = json.decode(response.body);
